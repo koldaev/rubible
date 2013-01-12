@@ -15,12 +15,34 @@
     android:layout_width="wrap_content"
     android:layout_weight="1"
     android:layout_height="50dp" />
-    
+
+</LinearLayout>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearLayout2"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:orientation="horizontal" >
+
 <Spinner
     android:id="@+id/spinner2"
     android:layout_width="wrap_content"
     android:layout_weight="0"
     android:layout_height="50dp" />
+
+<EditText
+    android:id="@+id/editText1"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:layout_weight="1"/>
+
+<Button
+    android:id="@+id/button1"
+    style="?android:attr/buttonStyleSmall"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:layout_weight="0"
+    android:text="Найти" />
 
 </LinearLayout>
 

@@ -13,12 +13,14 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.LightingColorFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Html;
@@ -26,20 +28,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressLint("HandlerLeak")
-public class RubibleActivity extends Activity implements OnItemSelectedListener  {
+public class RubibleActivity extends Activity implements OnItemSelectedListener, OnClickListener  {
+	
+	public static File INDEX_DIR;
 	
 	private int mSpinnerCount=2;
 
 	private int mSpinnerInitializedCount=0;
+	
+	EditText searchtext;
 	
 	SharedPreferences spref;
 	SharedPreferences loadspref;
@@ -68,6 +77,8 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rubible);
+		
+		copyindexes();
 		
 		mSpinnerInitializedCount = 2;
 		
@@ -112,6 +123,47 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener 
 
 
 	
+	private void copyindexes() {
+		File root = android.os.Environment.getExternalStorageDirectory();
+		File dir = new File(root.getAbsolutePath() + "/rubible_search");
+	    
+		//создаем директорию и копируем поисковые индексы при первом запуске приложения
+		if(!dir.exists()) {
+		
+		dir.mkdirs();
+	    
+		 AssetManager assetManager = getAssets();
+		    String[] files = null;
+		    try {
+		        files = assetManager.list("");
+		    } catch (IOException e) {
+		        //Log.e("tag", "Failed to get asset file list.", e);
+		    }
+		    
+		    for(String filename : files) {
+		    	if(!filename.contentEquals("rubible4.jpeg")) {
+		        InputStream in = null;
+		        OutputStream out = null;
+		        try {
+		          in = assetManager.open(filename);
+		          out = new FileOutputStream(dir + "/" + filename);
+		          copyFile(in, out);
+		          in.close();
+		          in = null;
+		          out.flush();
+		          out.close();
+		          out = null;
+		        } catch(IOException e) {
+		            //Log.e("tag", "Failed to copy asset file: " + filename, e);
+		        }
+		    }
+		    }
+		
+		}
+	}
+
+
+
 	private void touchinit() {
 		
 		final ScrollView sv = (ScrollView)findViewById(R.id.vscroll);
@@ -157,10 +209,18 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener 
 	        	sv.scrollTo(0, intpos);
 	        }
 	     });
+		
+		
 	}
 
 
 	private void init() throws IOException {		
+		
+		Button button = (Button) findViewById(R.id.button1);
+		button.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+		button.setOnClickListener(this);
+		
+		searchtext = (EditText) findViewById(R.id.editText1); 
 		
 		//Button fav = (Button) findViewById(R.id.button1);
 		//fav.setOnClickListener(l)
@@ -629,6 +689,28 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener 
 		String textfortoast = "Текст сохранен в " + dir + "/"+filenametosave;
 		Toast.makeText(this, textfortoast, Toast.LENGTH_SHORT).show();
 				    
+	}
+
+
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		
+		case R.id.button1:
+
+			//Intent intent = new Intent(this, RubibleActivity.class);
+		    //startActivity(intent);
+			if(searchtext.length() == 0) {
+				Toast.makeText(this, "Введите слово для поиска", Toast.LENGTH_SHORT).show();
+			} else {
+				Intent intentsearch = new Intent(this, Searchaction.class);
+				intentsearch.putExtra("extrasearchvalue", searchtext.getText().toString());
+			    startActivity(intentsearch);
+			}
+	    break;
+		
+		}
 	}
 	
 
