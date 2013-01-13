@@ -361,16 +361,24 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		}
 		finally{
 
+			String textus = "";
+			
 		cursor = db.rawQuery("select * from rutext where bible = " + i + " and chapter = " + ch , null);
 
  		while(cursor.moveToNext()){
- 			fortextview += cursor.getString(cursor.getColumnIndex("poem")) + ".&nbsp;" + cursor.getString(cursor.getColumnIndex("poemtext")) + "<br>" ;
+ 			if(intpoemfromsearch == cursor.getInt(cursor.getColumnIndex("poem"))) {
+ 				textus = "<b>" + cursor.getString(cursor.getColumnIndex("poemtext")) + "</b>";
+ 				intpoemfromsearch = 0;
+ 			} else {
+ 				textus = cursor.getString(cursor.getColumnIndex("poemtext"));
+ 			}
+ 			fortextview +=  cursor.getString(cursor.getColumnIndex("poem")) + ".&nbsp;" + textus + "<br>" ;
  		}
+ 		
+ 		tv.setText(Html.fromHtml(fortextview));
  		
  		if (cursor != null)
 	        cursor.moveToFirst();
- 		
- 		tv.setText(Html.fromHtml(fortextview));
  		
 		}
 		
