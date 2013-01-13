@@ -3,6 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    
+ <ScrollView 
+    android:id="@+id/vscroll" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent">
 
 <TextView
     android:id="@+id/textViewsearch"
@@ -10,8 +15,9 @@
     android:layout_height="wrap_content"
     android:autoLink="all"
     android:scrollHorizontally="false"
-    android:scrollbars="vertical"
     android:text=""
     android:textStyle="normal" />
+
+</ScrollView>
 
 </LinearLayout>

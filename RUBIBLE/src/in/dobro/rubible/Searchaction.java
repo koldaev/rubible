@@ -19,6 +19,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
@@ -41,12 +42,16 @@ public class Searchaction extends Activity {
 	EditText searchtext;
 	String searchvalue;
 	
+	ProgressDialog pd;
+	
 	  @Override
 	  protected void onCreate(Bundle savedInstanceState) {
 		
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.searching);
 	   
+	    pd = new ProgressDialog(this);
+	    
 	    try {
 			Lucenesearch();
 		} catch (IOException e) {
@@ -61,12 +66,16 @@ public class Searchaction extends Activity {
 
 	private void Lucenesearch() throws IOException, ParseException {
 		
+		final Intent intentmain = new Intent(this, RubibleActivity.class);
+		
 		Intent searchintent = getIntent(); 
 		searchvalue = searchintent.getStringExtra("extrasearchvalue");
 		
-		setTitle("Поиск слова: \"" + searchvalue + "\"");
+		setTitle("Поиск слова: " + searchvalue);
 		
 		tvsearch = (TextView)findViewById(R.id.textViewsearch);
+		
+		tvsearch.setPadding(15, 15, 15, 15);
 		
 		File root = android.os.Environment.getExternalStorageDirectory();
 		File dir = new File(root.getAbsolutePath() + "/rubible_search");
@@ -101,6 +110,8 @@ public class Searchaction extends Activity {
 
 	    tvsearch.append(Html.fromHtml(result));
 	    
+	    String glavname;
+	    
 	    for(int i=0;i<hits.length;++i) {
     	    int docId = hits[i].doc;
     	    Document d = searcher.doc(docId);
@@ -110,27 +121,58 @@ public class Searchaction extends Activity {
     	    String namebible = d.get("indexbiblename");
     	    
     	    final String getchapter = d.get("chapter");
-    	    String getpoem = d.get("poem");
+    	    final String getpoem = d.get("poem");
+    	    //ниже в стихах должна быть подсветка искомой фразы/слова
     	    String getpoemtext = d.get("poemtext");
-
-    	    result = "<font color='gray'>Книга " + getbible + ", глава " + getchapter + ", стих " + getpoem + "</font><br>";
-    	    //result += "<a style='text-decoration:none;color:black;' href=http://null_" + getbible + "_" + getchapter + "_" + getpoem + ">" + getpoemtext + "</a><br><br>";
-
-    	    tvsearch.append(Html.fromHtml(result));
     	    
-    	    SpannableString link = makeLinkSpan(getpoemtext, new View.OnClickListener() {          
+    	    final String searchinbook = rubibleproperties.rubiblenames[Integer.parseInt(getbible)-1];
+    	    
+    	    if(Integer.parseInt(getbible) != 19) {
+    	    	glavname = ", глава ";
+    	    } else {
+    	    	glavname = ", псалом ";
+    	    }
+    	    
+    	    String stringglav = searchinbook + glavname + getchapter + ", стих " + getpoem;
+
+    	    SpannableString link = makeLinkSpan(stringglav, new View.OnClickListener() {          
     	        @Override
     	        public void onClick(View v) {
-    	        	//tv.setText("click");
-    	        	String textlink = "Книга " + getbible + ", глава " + getchapter;
-    	        	Toast.makeText(getApplicationContext(), textlink, Toast.LENGTH_SHORT).show();
+    	        	
+    	          pd.setTitle(searchinbook);
+  		 	      pd.setIndeterminate(true);
+  		 	      pd.setInverseBackgroundForced(true);
+  		 	      pd.setCancelable(false);
+  		 	      pd.setCanceledOnTouchOutside(false);
+  		 	      pd.setMessage("Идет загрука\r\nПожалуйста, подождите...");
+  		 	      pd.show();
+
+    	        Thread t = new Thread() {
+                        @Override
+                        public void run() {
+                        	intentmain.putExtra("bookint", Integer.parseInt(getbible));
+            				intentmain.putExtra("glavint", Integer.parseInt(getchapter));
+            				intentmain.putExtra("poemint", Integer.parseInt(getpoem));
+            			    startActivity(intentmain);
+            			    pd.dismiss();
+                        }
+                };
+                t.start();
+    	        	
     	        }
     	    });
     	    
     	    tvsearch.append(link);
-    	 
-    	    result = "<br><br>";
     	    
+    	    result = "<br>";
+    	    tvsearch.append(Html.fromHtml(result));
+ 
+    	    tvsearch.append(Html.fromHtml(result));
+    	    
+    	    
+    	    tvsearch.append(Html.fromHtml(getpoemtext));
+    	    
+    	    result = "<br><br>";
     	    tvsearch.append(Html.fromHtml(result));  
     	    
     	}

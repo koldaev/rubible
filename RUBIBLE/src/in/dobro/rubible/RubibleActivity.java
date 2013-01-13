@@ -72,6 +72,10 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	Spinner spinner;
 	Spinner spinner2;
 	
+	Integer intbookfromsearch;
+	Integer intglavfromsearch;
+	Integer intpoemfromsearch;
+	
 	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -216,6 +220,12 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 
 	private void init() throws IOException {		
 		
+
+		Intent mainintent = getIntent(); 
+		intbookfromsearch = mainintent.getIntExtra("bookint",0);
+		intglavfromsearch = mainintent.getIntExtra("glavint",0);
+		intpoemfromsearch = mainintent.getIntExtra("poemint",0);
+		
 		Button button = (Button) findViewById(R.id.button1);
 		button.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
 		button.setOnClickListener(this);
@@ -237,7 +247,23 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	     spinner.setPrompt("Новый Завет");
 	     
 	     spinner.setOnItemSelectedListener(this);
-	      
+	     
+	     //tv.setText(intbookfromsearch+"");
+	     
+	     	if(intbookfromsearch > 0) {
+	     		
+	     	mSpinnerInitializedCount = 1;
+	     		
+	     	bibletext(intbookfromsearch, intglavfromsearch);
+
+		    mSpinnerInitializedCount = 1;
+		    spinner.setSelection(intbookfromsearch-1);
+		    
+		    mSpinnerInitializedCount = 1;
+		    spinner2.setSelection(intglavfromsearch-1);
+	     	
+	     	}
+	     
 	}
 
 	public void bibletext(int i, int ch) {
@@ -260,7 +286,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		cursor = db.rawQuery("select * from rutext where bible = " + i + " and chapter = " + ch , null);
 
  		while(cursor.moveToNext()){
- 			fortextview += cursor.getString(cursor.getColumnIndex("poem")) + ".&nbsp;" + cursor.getString(cursor.getColumnIndex("poemtext")) + "<br>" ;
+ 			fortextview += cursor.getString(cursor.getColumnIndex("poem")) + ".&nbsp;" + cursor.getString(cursor.getColumnIndex("poemtext"))  +  "<br>" ;
  		}
  		
  		if (cursor != null)
@@ -276,12 +302,22 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			setTitle("Новый Завет");
 		}
 		
-		final ScrollView sv = (ScrollView)findViewById(R.id.vscroll);
-		sv.scrollTo(0, 0);
+		final ScrollView sv1 = (ScrollView)findViewById(R.id.vscroll);
+		
+		//sv.scrollTo(0, y);
+		sv1.post(new Runnable() {
+		    @Override
+		    public void run() {
+		    	int y1 = tv.getLayout().getLineTop(intpoemfromsearch*2);
+		        sv1.scrollTo(0, (y1-30));
+		    }
+		});
+		
+		//setTitle(intpoemfromsearch+":");
 		
 		myDbHelper.close();
 		cursor.close();
-		
+
 	}
 
 
@@ -510,7 +546,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		}
 		
 		final ScrollView sv = (ScrollView)findViewById(R.id.vscroll);
-		sv.scrollTo(0, 0);
+		//sv.scrollTo(0, 0);
 		
 		myDbHelper.close();
 		cursor.close();
@@ -704,9 +740,28 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			if(searchtext.length() == 0) {
 				Toast.makeText(this, "Введите слово для поиска", Toast.LENGTH_SHORT).show();
 			} else {
-				Intent intentsearch = new Intent(this, Searchaction.class);
-				intentsearch.putExtra("extrasearchvalue", searchtext.getText().toString());
-			    startActivity(intentsearch);
+				
+				  pd.setTitle(searchtext.getText().toString());
+		 	      pd.setIndeterminate(true);
+		 	      pd.setInverseBackgroundForced(true);
+		 	      pd.setCancelable(false);
+		 	      pd.setCanceledOnTouchOutside(false);
+		 	      pd.setMessage("Идет поиск\r\nПожалуйста, подождите...");
+		 	      pd.show();
+		 	      
+				
+				final Intent intentsearch = new Intent(this, Searchaction.class);
+
+                Thread t = new Thread() {
+                        @Override
+                        public void run() {
+            				intentsearch.putExtra("extrasearchvalue", searchtext.getText().toString());
+            			    startActivity(intentsearch);
+            			    pd.dismiss();
+                        }
+                };
+                t.start();
+		
 			}
 	    break;
 		
