@@ -10,9 +10,7 @@ import java.io.PrintWriter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -90,14 +88,14 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		h = new Handler() {
 		      public void handleMessage(android.os.Message msg) {
 		    	 if (msg.what == glavforhundler) {
-		    		 Toast.makeText(getApplicationContext(), "Книга сохранена", Toast.LENGTH_SHORT).show();
+		    		 Toast.makeText(getApplicationContext(), getString(R.string.savingbook), Toast.LENGTH_SHORT).show();
 		    		 pd.dismiss();
 		    	 }
 		    };
 		};
 		
 		
-		setTitle("Библия");
+		setTitle(getString(R.string.biblename));
 		
 		tv = (TextView)findViewById(R.id.textView1);
 		tv.setText("");
@@ -108,10 +106,10 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	    
 	    if(textsize > 0) {
 	    	tv.setTextSize(textsize);
-	    	Toast.makeText(this, "Загружен размер шрифта: " + textsize, Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(this, getString(R.string.loadfontsize) + ": " + textsize, Toast.LENGTH_SHORT).show();
 	    } else {
 	    	tv.setTextSize(18);
-	    	Toast.makeText(this, "Размер шрифта по умолчанию: 18.0", Toast.LENGTH_SHORT).show();
+	    	Toast.makeText(this, getString(R.string.defaultfontsize) + ": 18.0", Toast.LENGTH_SHORT).show();
 	    }
 		
 		try {
@@ -232,9 +230,6 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		
 		searchtext = (EditText) findViewById(R.id.editText1); 
 		
-		//Button fav = (Button) findViewById(R.id.button1);
-		//fav.setOnClickListener(l)
-		
 		spinner = (Spinner) findViewById(R.id.spinner1);
 		spinner2 = (Spinner) findViewById(R.id.spinner2);
 		
@@ -244,7 +239,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		 
 	     spinner.setAdapter(adapter);
-	     spinner.setPrompt("Новый Завет");
+	     spinner.setPrompt(getString(R.string.newtestament));
 	     
 	     spinner.setOnItemSelectedListener(this);
 	     
@@ -297,9 +292,9 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		}
 		
 		if(i < 40) {
-			setTitle("Ветхий Завет");
+			setTitle(getString(R.string.oldtestament));
 		} else {
-			setTitle("Новый Завет");
+			setTitle(getString(R.string.newtestament));
 		}
 		
 		final ScrollView sv1 = (ScrollView)findViewById(R.id.vscroll);
@@ -313,8 +308,6 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		    }
 		});
 		
-		//setTitle(intpoemfromsearch+":");
-		
 		myDbHelper.close();
 		cursor.close();
 
@@ -327,9 +320,9 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		String glavname;
 		
 		if(chapters != 150) {
-			glavname = "Глава ";
+			glavname = getString(R.string.chapter) + " ";
 		} else {
-			glavname = "Псалом ";
+			glavname = getString(R.string.psalm) + " ";
 		}
 		
 		rubibleglaves[0] = glavname + "1";
@@ -341,7 +334,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		adapterglav.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		 
 	     spinner2.setAdapter(adapterglav);
-	     spinner2.setPrompt("Выбрать главу");
+	     spinner2.setPrompt(getString(R.string.chapterchang));
 	     spinner2.setOnItemSelectedListener(this);
 	     
 	     
@@ -383,9 +376,9 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		}
 		
 		if(i < 40) {
-			setTitle("Ветхий Завет");
+			setTitle(getString(R.string.oldtestament));
 		} else {
-			setTitle("Новый Завет");
+			setTitle(getString(R.string.newtestament));
 		}
 		
 		cursor.close();
@@ -399,13 +392,13 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		
 		menu.clear();
 		
-		menu.add(0, 1, 1, "Сохранить закладку");
-		menu.add(0, 2, 2, "Загрузить закладку");
-		menu.add(1, 3, 3, "Сохранить главу");
-		menu.add(1, 4, 4, "Сохранить книгу");
-		menu.add(1, 5, 5, "Сохранить базу");
-		menu.add(1, 6, 6, "Шрифт меньше");
-		menu.add(1, 7, 7, "Шрифт больше");
+		menu.add(0, 1, 1, getString(R.string.savebookmark));
+		menu.add(0, 2, 2, getString(R.string.loadbookmark));
+		menu.add(1, 3, 3, getString(R.string.savechapter));
+		menu.add(1, 4, 4, getString(R.string.savebook));
+		menu.add(1, 5, 5, getString(R.string.savebase));
+		menu.add(1, 6, 6, getString(R.string.smallfont));
+		menu.add(1, 7, 7, getString(R.string.bigfont));
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -441,7 +434,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		 	      pd.setInverseBackgroundForced(true);
 		 	      pd.setCancelable(false);
 		 	      pd.setCanceledOnTouchOutside(false);
-		 	      pd.setMessage("Идет экспорт в .txt\r\nПожалуйста, подождите...");
+		 	      pd.setMessage(getString(R.string.exportprocess));
 		 	      pd.show();
 
 		 		Thread t = new Thread(new Runnable() {
@@ -496,9 +489,9 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			cursor = db.rawQuery("select * from rutext where bible = " + currentbook + " and chapter = " + i, null);
 			
 			if(chapters != 150)
-				fortextview += "\r\nГлава " + i + "\r\n\r\n";
+				fortextview += "\r\n" + getString(R.string.chapter) + " " + i + "\r\n\r\n";
 			else
-				fortextview += "\r\nПсалом " + i + "\r\n\r\n";
+				fortextview += "\r\n" + getString(R.string.psalm) + " " + i + "\r\n\r\n";
 
 	 		while(cursor.moveToNext()){
 	 			fortextview += cursor.getString(cursor.getColumnIndex("poem")) + ". " + cursor.getString(cursor.getColumnIndex("poemtext")) + "\r\n";
@@ -532,25 +525,9 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	        e.printStackTrace();
 	    }
 		
-		String textfortoast = "Книга сохранена в " + dir + "/"+filenametosave;
-		//Toast.makeText(this, textfortoast, Toast.LENGTH_SHORT).show();
-				 
-		
 		cursor.close();
 		myDbHelper.close();
-		
-		/*
-		cursor = db.rawQuery("select * from rutext where bible = " + currentbook, null);
 
- 		while(cursor.moveToNext()){
- 			fortextview += cursor.getString(cursor.getColumnIndex("poem")) + ".&nbsp;" + cursor.getString(cursor.getColumnIndex("poemtext")) + "<br>" ;
- 		}
- 		
- 		if (cursor != null)
-	        cursor.moveToFirst();
- 		
- 		tv.setText(Html.fromHtml(fortextview));
- 		*/
 		}
 		
 		final ScrollView sv = (ScrollView)findViewById(R.id.vscroll);
@@ -571,7 +548,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		    Editor ed = spref.edit();
 		    ed.putFloat("fontsize", sizeminus);
 		    ed.commit();
-		    Toast.makeText(this, "Новый размер шрифта: " + sizeminus, Toast.LENGTH_SHORT).show();
+		    Toast.makeText(this, getString(R.string.newfontsize) + ": " + sizeminus, Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -584,7 +561,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			Editor ed = spref.edit();
 			ed.putFloat("fontsize", sizeplus);
 			ed.commit();
-			Toast.makeText(this, "Новый размер шрифта: " + sizeplus, Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.newfontsize) + ": " + sizeplus, Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -616,7 +593,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	    ed.commit();
 	    ed.putInt("glav", glavaplus);
 	    ed.commit();
-		Toast.makeText(this, "Закладка сохранена", Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.savingbookmark), Toast.LENGTH_SHORT).show();
 	}
 
 	private void savebase() {
@@ -648,7 +625,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	          out.close();
 	          out = null;
 	          
-	        String textfortoast = "База SQLite сохранена в " + forbasepath;
+	        String textfortoast = getString(R.string.savingbase) + " " + forbasepath;
 	  		Toast.makeText(this, textfortoast, Toast.LENGTH_SHORT).show();
 	          
 	        } catch(IOException e) {
@@ -667,7 +644,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	@Override
 	public void onBackPressed() {
 
-	    Toast.makeText(this, "Да любите друг друга!", Toast.LENGTH_SHORT).show();
+	    //Toast.makeText(this, "Да любите друг друга!", Toast.LENGTH_SHORT).show();
 	}
 
 
@@ -730,7 +707,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	        e.printStackTrace();
 	    }
 		
-		String textfortoast = "Текст сохранен в " + dir + "/"+filenametosave;
+		String textfortoast = getString(R.string.savingtext) + " " + dir + "/"+filenametosave;
 		Toast.makeText(this, textfortoast, Toast.LENGTH_SHORT).show();
 				    
 	}
@@ -743,10 +720,8 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		
 		case R.id.button1:
 
-			//Intent intent = new Intent(this, RubibleActivity.class);
-		    //startActivity(intent);
 			if(searchtext.length() == 0) {
-				Toast.makeText(this, "Введите слово для поиска", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, getString(R.string.enterword), Toast.LENGTH_SHORT).show();
 			} else {
 				
 				  pd.setTitle(searchtext.getText().toString());
@@ -754,7 +729,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		 	      pd.setInverseBackgroundForced(true);
 		 	      pd.setCancelable(false);
 		 	      pd.setCanceledOnTouchOutside(false);
-		 	      pd.setMessage("Идет поиск\r\nПожалуйста, подождите...");
+		 	      pd.setMessage(getString(R.string.findprocess) + "...");
 		 	      pd.show();
 		 	      
 				

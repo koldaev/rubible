@@ -30,6 +30,20 @@
     android:layout_weight="0"
     android:layout_height="50dp" />
 
+<ImageButton 
+android:id="@+id/buttonback" 
+android:layout_width="48dp"
+android:layout_height="48dp"
+android:layout_weight="0"
+android:src="@drawable/ic_menu_back"/>
+
+<ImageButton 
+android:id="@+id/buttonforward" 
+android:layout_width="48dp"
+android:layout_height="48dp"
+android:layout_weight="0"
+android:src="@drawable/ic_menu_forward"/>
+
 <EditText
     android:id="@+id/editText1"
     android:layout_width="wrap_content"

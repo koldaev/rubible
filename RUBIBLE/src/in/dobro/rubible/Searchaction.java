@@ -71,7 +71,7 @@ public class Searchaction extends Activity {
 		Intent searchintent = getIntent(); 
 		searchvalue = searchintent.getStringExtra("extrasearchvalue");
 		
-		setTitle("Поиск слова: " + searchvalue);
+		setTitle(getString(R.string.findofword) + ": " + searchvalue);
 		
 		tvsearch = (TextView)findViewById(R.id.textViewsearch);
 		
@@ -106,7 +106,7 @@ public class Searchaction extends Activity {
     	
     	ScoreDoc[] hits = collector.topDocs().scoreDocs;
     	
-	    String result = "<b>Результаты поиска: " + hits.length + " совпадений</b><br><br>";
+	    String result = "<b>" + getString(R.string.findresults) + ": " + hits.length + " " + getString(R.string.matches) + "</b><br><br>";
 
 	    tvsearch.append(Html.fromHtml(result));
 	    
@@ -128,12 +128,12 @@ public class Searchaction extends Activity {
     	    final String searchinbook = rubibleproperties.rubiblenames[Integer.parseInt(getbible)-1];
     	    
     	    if(Integer.parseInt(getbible) != 19) {
-    	    	glavname = ", глава ";
+    	    	glavname = ", " + getString(R.string.chapter) + " ";
     	    } else {
-    	    	glavname = ", псалом ";
+    	    	glavname = ", " + getString(R.string.psalm) + " ";
     	    }
     	    
-    	    String stringglav = searchinbook + glavname + getchapter + ", стих " + getpoem;
+    	    String stringglav = searchinbook + glavname + getchapter + ", " + getString(R.string.poem) + " " + getpoem;
 
     	    SpannableString link = makeLinkSpan(stringglav, new View.OnClickListener() {          
     	        @Override
@@ -144,7 +144,7 @@ public class Searchaction extends Activity {
   		 	      pd.setInverseBackgroundForced(true);
   		 	      pd.setCancelable(false);
   		 	      pd.setCanceledOnTouchOutside(false);
-  		 	      pd.setMessage("Идет загрука\r\nПожалуйста, подождите...");
+  		 	      pd.setMessage(getString(R.string.loadprocess) + "...");
   		 	      pd.show();
 
     	        Thread t = new Thread() {

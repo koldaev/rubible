@@ -2,7 +2,38 @@
 <resources>
 
     <string name="app_name">RUBIBLE</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-
+    
+    <string name="language">ru</string>
+    
+	<string name="savingbook">Книга сохранена</string>
+	<string name="biblename">Библия</string>
+	<string name="loadfontsize">Загружен размер шрифта</string>
+	<string name="defaultfontsize">Размер шрифта по умолчанию</string>
+	<string name="newtestament">Новый Завет</string>
+	<string name="oldtestament">Ветхий Завет</string>
+	<string name="chapter">Глава</string>
+	<string name="psalm">Псалом</string>
+	<string name="chapterchang">Выбрать главу</string>
+	<string name="savebookmark">Сохранить закладку</string>
+	<string name="loadbookmark">Загрузить закладку</string>
+	<string name="savechapter">Сохранить главу</string>
+	<string name="savebook">Сохранить книгу</string>
+	<string name="savebase">Сохранить базу</string>
+	<string name="smallfont">Шрифт меньше</string>
+	<string name="bigfont">Шрифт больше</string>
+	<string name="exportprocess">Идет экспорт в .txt\r\nПожалуйста, подождите</string>
+	<string name="newfontsize">Новый размер шрифта</string>
+	<string name="savingbookmark">Закладка сохранена</string>
+	<string name="savingbase">База SQLite сохранена в</string>
+	<string name="savingtext">Текст сохранен в</string>
+	<string name="enterword">Введите слово для поиска</string>
+	
+	<string name="findprocess">Идет поиск\r\nПожалуйста, подождите</string>
+	<string name="findofword">Поиск слова</string>
+	<string name="findresults">Результаты поиска</string>
+	<string name="matches">совпадений</string>
+	<string name="poem">стих</string>
+	<string name="loadprocess">Идет загрука\r\nПожалуйста, подождите</string>
+	
 </resources>
