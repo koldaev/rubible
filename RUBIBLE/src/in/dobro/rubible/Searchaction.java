@@ -196,6 +196,7 @@ public class Searchaction extends Activity {
 	        SpannableString.SPAN_INCLUSIVE_EXCLUSIVE);
 	    return link;
 	}
+
 	
 	private static class ClickableString extends ClickableSpan {  
 	    private View.OnClickListener mListener;          

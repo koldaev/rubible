@@ -8,6 +8,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -32,6 +45,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -56,7 +70,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	SQLiteDatabase db;
 	DBHelper myDbHelper;
 	String fortextview = "";
-	TextView tv;
+	static TextView tv;
 	Cursor cursor;
 	
 	 Integer jglav;
@@ -74,9 +88,14 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 	Integer intglavfromsearch;
 	Integer intpoemfromsearch;
 	
+	ImageButton backbutton;
+	ImageButton forwardbutton;
+	Button searchbutton;
+	
 	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_rubible);
 		
@@ -119,11 +138,31 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			e.printStackTrace();
 		}
 		
-		touchinit();
+		//touchinit();
 		
 	}
 
-
+	private void copybiblexml() throws IOException {
+		File root = android.os.Environment.getExternalStorageDirectory();
+		File dir = new File(root.getAbsolutePath() + "/rubible_xml");
+		if(!dir.exists()) {
+			
+			dir.mkdirs();
+			AssetManager assetManager = getAssets();
+			InputStream in =  assetManager.open("rubible.xml");
+			OutputStream out = new FileOutputStream(dir + "/rubible.xml");
+	          copyFile(in, out);
+	          in.close();
+	          in = null;
+	          out.flush();
+	          out.close();
+	          out = null;
+	          
+		}
+		
+		Toast.makeText(this, getString(R.string.savingxml) + " " + dir + "/rubible.xml", Toast.LENGTH_SHORT).show();
+		
+	}
 	
 	private void copyindexes() {
 		File root = android.os.Environment.getExternalStorageDirectory();
@@ -143,7 +182,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		    }
 		    
 		    for(String filename : files) {
-		    	if(!filename.contentEquals("rubible4.jpeg")) {
+		    	if((!filename.contentEquals("rubible4.jpeg")) && (!filename.contentEquals("rubible.xml"))) {
 		        InputStream in = null;
 		        OutputStream out = null;
 		        try {
@@ -223,15 +262,17 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		intbookfromsearch = mainintent.getIntExtra("bookint",0);
 		intglavfromsearch = mainintent.getIntExtra("glavint",0);
 		intpoemfromsearch = mainintent.getIntExtra("poemint",0);
-		
-		Button button = (Button) findViewById(R.id.button1);
-		button.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
-		button.setOnClickListener(this);
-		
-		searchtext = (EditText) findViewById(R.id.editText1); 
-		
+
 		spinner = (Spinner) findViewById(R.id.spinner1);
+		backbutton = (ImageButton) findViewById(R.id.buttonback);
+		backbutton.setOnClickListener(this);
 		spinner2 = (Spinner) findViewById(R.id.spinner2);
+		forwardbutton = (ImageButton) findViewById(R.id.buttonforward);
+		forwardbutton.setOnClickListener(this);
+		searchtext = (EditText) findViewById(R.id.editText1); 
+		searchbutton = (Button) findViewById(R.id.button1);
+		searchbutton.getBackground().setColorFilter(new LightingColorFilter(0xFFFFFFFF, 0xFFAA0000));
+		searchbutton.setOnClickListener(this);
 		
 		myDbHelper = new DBHelper(getApplicationContext(), "rubible4.jpeg", 23);
 		
@@ -399,6 +440,7 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		menu.add(1, 5, 5, getString(R.string.savebase));
 		menu.add(1, 6, 6, getString(R.string.smallfont));
 		menu.add(1, 7, 7, getString(R.string.bigfont));
+		menu.add(1, 8, 8, getString(R.string.tosavexml));
 		
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -457,6 +499,15 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 			 	fontplus();
 			break;
 		 
+		 	case 8:
+			try {
+				copybiblexml();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 	break;
+			
 		 }
 		 
 	      return super.onOptionsItemSelected(item);
@@ -716,7 +767,29 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 
 	@Override
 	public void onClick(View v) {
+
 		switch (v.getId()) {
+		
+		case R.id.buttonback:
+			Integer book = spinner.getSelectedItemPosition()+1;
+	    	Integer glavaminus = spinner2.getSelectedItemPosition();
+	    	if(glavaminus > 0) {
+	    	bibletextglav(book,glavaminus);
+	    	spinner2.setSelection(glavaminus-1);
+	    	}
+	    break;
+	    
+		case R.id.buttonforward:
+
+			Integer book1 = spinner.getSelectedItemPosition()+1;
+        	Integer chapters = (Integer)rubibleproperties.rubiblechapters.get("rubible"+book1);
+        	Integer glavaplus = spinner2.getSelectedItemPosition()+2;
+        	if((glavaplus-1) < chapters) {
+        	bibletextglav(book1,glavaplus);
+        	spinner2.setSelection(glavaplus-1);
+        	}
+			
+		break;
 		
 		case R.id.button1:
 
@@ -751,6 +824,37 @@ public class RubibleActivity extends Activity implements OnItemSelectedListener,
 		}
 	}
 	
+	//вывод конкретной главы через xml - около 10 секунд... долго, но пусть будет этот метод
+	private static void bibleglav() throws ParserConfigurationException, SAXException, IOException, XPathExpressionException {
+		
+		DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+	    domFactory.setNamespaceAware(true); // never forget this!
+	    DocumentBuilder builder = domFactory.newDocumentBuilder();
+	    
+	    File root = android.os.Environment.getExternalStorageDirectory();
+		File xmlfile = new File(root.getAbsolutePath() + "/rubible_xml/rubible.xml");
+	    //String pathxml = "/mnt/sdcard0/rubible_xml/rubible.xml";
+	    
+	    Document doc = builder.parse(xmlfile);
+	    
+	    XPathFactory factory = XPathFactory.newInstance();
+	    XPath xpath = factory.newXPath();
 
+	    XPathExpression expr = xpath.compile("//booktext[43]/chapter[1]/verse/text()");
+
+	    Object result = expr.evaluate(doc, XPathConstants.NODESET);
+	    NodeList nodes = (NodeList) result;
+
+		tv.setText("");
+		tv.setPadding(10, 10, 10, 10);
+		String fortextview = "";
+	    
+	    for (int i = 0; i < nodes.getLength(); i++) {
+	    	fortextview +=  (i+1)  + ".&nbsp;" + nodes.item(i).getNodeValue() + "<br>" ;
+	    }
+
+	    tv.setText(Html.fromHtml(fortextview));
+	    
+	}
 
 }

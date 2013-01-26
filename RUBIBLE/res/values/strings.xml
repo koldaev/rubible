@@ -36,4 +36,10 @@
 	<string name="poem">стих</string>
 	<string name="loadprocess">Идет загрука\r\nПожалуйста, подождите</string>
 	
+	<string name="searchbutton">Найти</string>
+	<string name="backbutton">Назад</string>
+	<string name="forwardbutton">Вперед</string>
+	
+	<string name="tosavexml">Сохранить в BibleXML</string>
+	<string name="savingxml">Новый формат XML в</string>
 </resources>
